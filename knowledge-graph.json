@@ -1,0 +1,304 @@
+{
+  "entities": [
+    {
+      "id": "vincent-braakman",
+      "type": "Person",
+      "name": "Vincent Braakman",
+      "observations": [
+        "Founder of Sail 2 Wellness",
+        "Co-host of the Ionian sailing retreat",
+        "GitHub: vincentbraakman-glitch",
+        "Passionate about sailing, Greek culture, and meaningful travel",
+        "Based in the Netherlands (Windows machine, MINGW64)"
+      ]
+    },
+    {
+      "id": "lorraine-desser-schulze",
+      "type": "Person",
+      "name": "Lorraine Desser Schulze",
+      "observations": [
+        "Primary retreat leader and yoga guide",
+        "500-hour certified mindfulness yoga teacher from Spirit Rock Meditation Center",
+        "20+ years background in food innovation",
+        "Leading international retreats since 2016",
+        "Contact: yogawithlorraine13@gmail.com",
+        "Brand: Yoga with Lorraine"
+      ]
+    },
+    {
+      "id": "sail-2-wellness",
+      "type": "Business",
+      "name": "Sail 2 Wellness",
+      "observations": [
+        "Founded by Vincent Braakman",
+        "Operates private crewed sailing retreats in the Ionian Islands, Greece",
+        "Booking platform: Easol (yogawithlorraine.easol.com)",
+        "Contact email: yogawithlorraine13@gmail.com",
+        "Currently listed on Responsible Travel and Venturesail",
+        "Pricing: from €3,300/person (cabin), €21,000 private full charter",
+        "Max 10 guests per charter"
+      ]
+    },
+    {
+      "id": "saba-50",
+      "type": "Boat",
+      "name": "Saba 50 Catamaran",
+      "observations": [
+        "Home port: Lefkada, Greece",
+        "5 cabins: 4 large ensuite + 1 solo cabin",
+        "Max 10 guests",
+        "Professional skipper and chef on board",
+        "Paddleboards and snorkel gear provided",
+        "Used for 7-night Ionian sailing retreats"
+      ]
+    },
+    {
+      "id": "ionian-islands",
+      "type": "Destination",
+      "name": "Ionian Islands",
+      "observations": [
+        "Primary sailing destination for Sail 2 Wellness",
+        "Itinerary: Lefkada → Meganisi → Kefalonia → Ithaka",
+        "Departure point: Preveza Airport (PVK)",
+        "Key excursions: Greek cooking workshop in Kioni (Ithaka), e-bike tour + Melissani Cave (Kefalonia), Ionian signature massage in Fiskardo",
+        "2027 retreat dates: September 13–20"
+      ]
+    },
+    {
+      "id": "responsible-travel",
+      "type": "LeadSource",
+      "name": "Responsible Travel",
+      "observations": [
+        "Already listing Sail 2 Wellness trips",
+        "Commission-based model",
+        "Ethical/sustainable travel marketplace",
+        "URL: responsibletravel.com"
+      ]
+    },
+    {
+      "id": "venturesail",
+      "type": "LeadSource",
+      "name": "Venturesail",
+      "observations": [
+        "Already listing Sail 2 Wellness trips",
+        "Commission-based model",
+        "Sailing holidays marketplace",
+        "URL: venturesail.com"
+      ]
+    },
+    {
+      "id": "fleewinter",
+      "type": "LeadSource",
+      "name": "Fleewinter",
+      "observations": [
+        "Priority 1 outreach target",
+        "UK luxury sailing specialist, AITO member since 2003",
+        "Sells crewed catamarans in the Ionian",
+        "Commission: ~15–20%",
+        "Contact: sailing@fleewinter.com · 020 7112 0019",
+        "URL: fleewinter.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "sail-in-greece",
+      "type": "LeadSource",
+      "name": "Sail in Greece",
+      "observations": [
+        "Priority 1 outreach target",
+        "2025 Global Elite Award: Leading Boutique Sailing Operator in Greece",
+        "Has active travel agent/partner scheme — 10% commission stated",
+        "URL: sail-ingreece.com/travel-agents",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "turquoise-holidays",
+      "type": "LeadSource",
+      "name": "Turquoise Holidays",
+      "observations": [
+        "Priority 1 outreach target",
+        "Award-winning UK honeymoon & family sailing specialist",
+        "Dedicated sailing product line",
+        "Commission: ~15–20%",
+        "Contact: 01494 678 400",
+        "URL: turquoiseholidays.co.uk",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "eros-psyche-travel",
+      "type": "LeadSource",
+      "name": "Eros+Psyche Travel",
+      "observations": [
+        "Priority 1 outreach target",
+        "Athens-based boutique Greece & Italy honeymoon specialist",
+        "States 'a sailing boat is perfect for honeymoon vacations'",
+        "Has travel agents programme",
+        "URL: erosandpsyche.travel/travel-agents",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "red-savannah",
+      "type": "LeadSource",
+      "name": "Red Savannah",
+      "observations": [
+        "Priority 1 outreach target",
+        "Multi-award-winning UK luxury villa & yacht charter specialist",
+        "Actively sells private crewed sailing in Greece for families/groups",
+        "Commission: ~15–20%",
+        "Contact: +44 1242 787 837",
+        "URL: redsavannah.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "pelorus-yachting",
+      "type": "LeadSource",
+      "name": "Pelorus Yachting",
+      "observations": [
+        "Priority 1 outreach target",
+        "Licensed yacht brokerage, London (126 New Kings Road, SW6)",
+        "Active Greece/Ionian portfolio, honeymoon charters",
+        "Trade partner programme with enhanced commissions",
+        "Commission: ~15–20%",
+        "URL: pelorusyachting.com/us/about/trade-partners",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "luxury-greece-dmc",
+      "type": "LeadSource",
+      "name": "Luxury Greece DMC",
+      "observations": [
+        "Priority 2 outreach target",
+        "Virtuoso & Serandipians-recognised Athens DMC",
+        "Routes bookings from global luxury travel advisors",
+        "Expertise in private yacht chartering",
+        "URL: luxurygreecedmc.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "unforgettable-greece",
+      "type": "LeadSource",
+      "name": "Unforgettable Greece",
+      "observations": [
+        "Priority 2 outreach target",
+        "Greece specialist (London/Athens/NY)",
+        "Trade partner programme, 24-hr turnaround",
+        "Sells private sailing + honeymoon itineraries",
+        "URL: unforgettablegreece.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "true-greece",
+      "type": "LeadSource",
+      "name": "True Greece",
+      "observations": [
+        "Priority 2 outreach target",
+        "Premium Greece specialist, US & international clientele",
+        "Sells private sailing trips in curated island-hopping packages",
+        "URL: truegreece.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "eyia-retreats",
+      "type": "LeadSource",
+      "name": "Eyia Retreats",
+      "observations": [
+        "Priority 2 outreach target",
+        "Athens boutique retreat planner",
+        "Specialises in honeymoons, bucket list, wellness travel",
+        "Contact: info@eyiaretreats.com",
+        "URL: eyiaretreats.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "healing-holidays",
+      "type": "LeadSource",
+      "name": "Healing Holidays",
+      "observations": [
+        "Priority 2 outreach target",
+        "World's Best Spa & Wellness Tour Operator",
+        "Sells luxury Greece wellness escapes",
+        "Commission: ~15–25%",
+        "Contact: +44 207 843 3597",
+        "URL: healingholidays.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "me-time-away",
+      "type": "LeadSource",
+      "name": "Me Time Away",
+      "observations": [
+        "Priority 2 outreach target",
+        "Premium wellbeing retreat booking platform",
+        "Already lists Greek island sailing retreats as a category",
+        "Sustainability-focused",
+        "URL: metimeaway.com",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "original-travel",
+      "type": "LeadSource",
+      "name": "Original Travel",
+      "observations": [
+        "Priority 2 outreach target",
+        "UK boutique luxury honeymoon & tailor-made operator",
+        "Sells sailing in Greece",
+        "Commission: ~15–20%",
+        "URL: originaltravel.co.uk",
+        "Status: Not yet contacted"
+      ]
+    },
+    {
+      "id": "project-marketplace-research",
+      "type": "Project",
+      "name": "Sailing Marketplace Research",
+      "observations": [
+        "Goal: find boutique/luxury commission-based distribution partners for Sail 2 Wellness",
+        "Focus: private charter, honeymoon, family, wellness retreat",
+        "Rejected: mass-market platforms (BookYogaRetreats, BookRetreats, Sailsquare) — too cheap",
+        "28 platforms researched and documented",
+        "Files created: distribution-partners.md, outreach-drafts.md",
+        "GitHub branch: claude/sailing-marketplace-research-CHDqa",
+        "Repo: vincentbraakman-glitch/Lefkada-Lorraine",
+        "13 outreach email drafts ready — not yet sent"
+      ]
+    }
+  ],
+  "relations": [
+    { "from": "vincent-braakman", "relation": "FOUNDED", "to": "sail-2-wellness" },
+    { "from": "lorraine-desser-schulze", "relation": "LEADS_RETREATS_FOR", "to": "sail-2-wellness" },
+    { "from": "sail-2-wellness", "relation": "OPERATES", "to": "saba-50" },
+    { "from": "saba-50", "relation": "SAILS_IN", "to": "ionian-islands" },
+    { "from": "sail-2-wellness", "relation": "LISTED_ON", "to": "responsible-travel" },
+    { "from": "sail-2-wellness", "relation": "LISTED_ON", "to": "venturesail" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "fleewinter" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "sail-in-greece" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "turquoise-holidays" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "eros-psyche-travel" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "red-savannah" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "pelorus-yachting" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "luxury-greece-dmc" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "unforgettable-greece" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "true-greece" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "eyia-retreats" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "healing-holidays" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "me-time-away" },
+    { "from": "sail-2-wellness", "relation": "OUTREACH_TARGET", "to": "original-travel" },
+    { "from": "vincent-braakman", "relation": "WORKING_ON", "to": "project-marketplace-research" }
+  ],
+  "meta": {
+    "lastUpdated": "2026-04-09",
+    "session": "cse_01VuL2aJ5tYQDkPMtZPuqHAj",
+    "version": "1.0"
+  }
+}
