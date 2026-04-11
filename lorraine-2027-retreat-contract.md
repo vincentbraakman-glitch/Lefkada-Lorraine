@@ -1,7 +1,7 @@
 # PARTNER RETREAT FACILITATION AGREEMENT
 
 **Between:**
-- **Sail to Wellness** ("Facilitator"), operated by Vincent Braakman, Vinkeveen, Utrecht, Netherlands — vincent@sailing2wellness.com
+- **Sailing2Wellness** ("Facilitator"), operated by Vincent Braakman, Vinkeveen, Utrecht, Netherlands — vincent@sailing2wellness.com
 - **Lorraine Desser Schulze / Yoga with Lorraine** ("Organizer"), 137 Alberta Ave, San Carlos, CA 94070, USA — yogawithlorraine13@gmail.com
 
 **Trip:** Ionian Islands Sailing & Wellness Retreat — 18–25 September 2027
@@ -10,11 +10,13 @@
 
 ## 1. PURPOSE AND NATURE OF THIS ARRANGEMENT
 
-This Agreement establishes the terms under which Sail to Wellness (S2W) provides vessel facilitation services for a retreat organized and led by Lorraine Desser Schulze ("Lorraine" / "Organizer").
+This Agreement establishes the terms under which Sailing2Wellness (S2W) provides vessel facilitation services for a retreat organized and led by Lorraine Desser Schulze ("Lorraine" / "Organizer").
 
 **This is NOT a co-hosted arrangement.** S2W acts solely as Facilitator — providing the vessel, crew, and logistical support. The Organizer is fully responsible for marketing, guest recruitment, guest management, and all guest payments.
 
 **This arrangement is fundamentally different from the Sardinia 2025 retreat.** In Sardinia, S2W managed all bookings, collected all guest payments, and paid Lorraine a partner contribution after the trip. That model is not applicable here. The Organizer acknowledges this distinction and accepts the responsibilities set out in this Agreement.
+
+This Agreement is governed by Dutch law.
 
 ---
 
@@ -22,18 +24,22 @@ This Agreement establishes the terms under which Sail to Wellness (S2W) provides
 
 | | |
 |---|---|
-| **Vessel** | Saba 50 catamaran |
+| **Primary Vessel** | Saba 50 catamaran |
 | **Route** | Lefkada → Meganisi → Ithaka → Kefalonia (Sami & Fiskardo) → Sivota → Lefkada |
 | **Duration** | 7 nights / 8 days |
 | **Dates** | 18–25 September 2027 |
 | **Embarkation** | Lefkada Marina, approx. 4:00–5:00 PM, 18 September 2027 |
 | **Disembarkation** | Lefkada Marina, approx. 8:00–9:00 PM, 25 September 2027 |
 
+### 2.1 Option to Add a Second Vessel
+
+Should guest demand exceed the capacity of the primary vessel, the parties may agree in writing to add a second vessel to the trip. Any such addition will be subject to a separate written addendum to this Agreement, including the applicable vessel, pricing, and payment terms. S2W cannot guarantee the availability or pricing of a second vessel until expressly confirmed in that addendum.
+
 ---
 
 ## 3. ROLES AND RESPONSIBILITIES
 
-### 3.1 Sail to Wellness — Facilitator
+### 3.1 Sailing2Wellness — Facilitator
 
 S2W is responsible for:
 - Providing the Saba 50 vessel, captain, and chef
@@ -56,8 +62,7 @@ The Organizer is responsible for:
 - Leading all wellness activities: yoga, breathwork, meditation, and mindfulness sessions
 - Accompanying and guiding guests during all shore dinners
 - **Paying all dinner costs** (S2W coordinates restaurant options; Organizer pays)
-- Ensuring a minimum of **8 paying guests** for the trip to proceed
-- Notifying S2W promptly of any changes in confirmed guest numbers
+- Notifying S2W of confirmed guest numbers to allow excursion cost calculation
 - Obtaining appropriate personal and professional liability insurance
 - Recommending travel insurance to all guests
 
@@ -71,15 +76,15 @@ Should the Organizer or any guests elect to remain aboard after S2W disembarks o
 
 ### 4.1 Package Payable by the Organizer to S2W
 
-| Component | Basis | Estimated Cost |
+| Component | Basis | Cost |
 |---|---|---|
-| Saba 50 Vessel (captain, chef, half-board, 7 nights, harbor fees) | Fixed | **€32,000** |
-| Greek Cooking Workshop — Kefalonia | €85 per person | €850 * |
-| Ionian Signature Spa — Fiskardo | €180 per person | €1,800 * |
-| E-bike & Melissani Cave Tour | €110 per person | €1,100 * |
-| **Estimated Total Package Price** | | **€35,750** |
+| Saba 50 Vessel (captain, chef, half-board, 7 nights, harbor fees) | Fixed — regardless of occupancy | **€32,000** |
+| Greek Cooking Workshop — Kefalonia | €85 per confirmed guest | variable |
+| Ionian Signature Spa — Fiskardo | €180 per confirmed guest | variable |
+| E-bike & Melissani Cave Tour | €110 per confirmed guest | variable |
+| **Total** | | **€32,000 + excursions** |
 
-*Excursion costs are estimated for 10 participants. Final excursion totals are calculated based on the confirmed number of participating guests and invoiced separately once guest count is finalized.
+**The vessel cost of €32,000 is fixed and payable in full regardless of the number of guests.** Excursion costs are variable and calculated based on the number of guests confirmed by the Organizer. Final excursion totals are invoiced separately once the guest count is confirmed.
 
 ### 4.2 Not Included in Package (Organizer's Responsibility)
 
@@ -94,51 +99,55 @@ Should the Organizer or any guests elect to remain aboard after S2W disembarks o
 
 ## 5. PAYMENT SCHEDULE — EXCEPTION TERMS
 
-As a special arrangement for this trip, the following payment schedule applies:
+As a special arrangement for this trip, the Organizer is not required to commit upon signing. She may take the time needed to secure sufficient guest bookings before making any payment. The following schedule applies once the Organizer is ready to commit:
 
 | Instalment | Amount | Due Date | Notes |
 |---|---|---|---|
-| **1st — Commitment Deposit** | **€8,000** (25% of vessel cost) | Upon signing this Agreement | Triggers S2W boat reservation with charter company |
-| **2nd Instalment** | **€8,000** (25% of vessel cost) | 1 January 2027 | |
-| **Final Balance** | **€16,000** vessel + confirmed excursion costs | Approx. 60 days before departure (by 19 July 2027) | Final excursion amount confirmed once guest count is set |
+| **1st — Commitment Deposit** | **€8,000** (25% of vessel cost) | At the Organizer's discretion, when she is ready to commit | Triggers S2W boat reservation; non-refundable after 7 days of receipt |
+| **2nd Instalment** | **€8,000** (25% of vessel cost) | 1 January 2027 | Non-refundable after 7 days of receipt |
+| **Final Balance** | **€16,000** + confirmed excursion costs | Approx. 60 days before departure (by 19 July 2027) | Excursion amount confirmed once final guest count is provided |
 
-**The Organizer decides when she is ready to commit.** The boat will not be reserved until the 1st instalment is received. S2W cannot guarantee vessel availability once this Agreement is signed but before payment is received.
+**The Organizer decides when she is ready to commit and make the first payment.** S2W will reserve the boat upon receipt of the 1st instalment. S2W cannot guarantee vessel availability until that payment is received, and reserves the right to release the vessel to another party in the absence of a confirmed deposit.
+
+**Each instalment is non-refundable 7 days after the date of receipt, in accordance with Dutch law and the Sailing2Wellness Terms and Conditions.**
 
 **Bank transfer details:**
-- Beneficiary: Vincent Braakman / Sail to Wellness
+- Beneficiary: Vincent Braakman / Sailing2Wellness
 - IBAN: NL15 KNAB 0258 0625 09
 - Reference: GREECE2027-LORRAINE
 
 ---
 
-## 6. BOOKING TOOLS AND GUEST PAYMENTS
+## 6. CANCELLATION POLICY
+
+### 6.1 Cancellation by the Organizer
+
+All payments made are non-refundable 7 days after the date of receipt. The following schedule applies to the total amount retained by S2W in the event of cancellation:
+
+| Cancellation Notice | Amount Retained by S2W |
+|---|---|
+| Within 7 days of any payment | Full refund of that instalment |
+| After 7-day grace period, 90+ days before departure | 1st instalment non-refundable (€8,000) |
+| 60–89 days before departure | 1st and 2nd instalments non-refundable (€16,000) |
+| Fewer than 60 days before departure | All payments made to date are non-refundable |
+
+### 6.2 Cancellation by S2W
+
+If S2W is unable to provide the agreed vessel due to circumstances within S2W's reasonable control, S2W will refund all amounts paid by the Organizer within 30 days.
+
+### 6.3 Force Majeure
+
+Neither party is liable for cancellations due to circumstances beyond reasonable control (natural disaster, government travel restrictions, severe illness, etc.). In such cases, S2W will make reasonable efforts to offer rebooking or credit toward a future trip.
+
+---
+
+## 7. BOOKING TOOLS AND GUEST PAYMENTS
 
 - The Organizer may use any booking or payment platform of her choosing (including TripMix, bank transfer, or any other tool) to collect guest payments.
 - **S2W does not manage, process, or hold any guest payments for this trip.**
 - S2W's own booking tool (Easol) is reserved for S2W-managed trips and is not part of this arrangement.
 - The Organizer is solely responsible for all guest payment disputes, refunds, and chargebacks.
 - Should the Organizer use TripMix or any other platform that routes payments to S2W, S2W must review and agree to this arrangement separately in writing before any such connection is established.
-
----
-
-## 7. MINIMUM GUESTS AND CANCELLATION
-
-### 7.1 Minimum Guests
-The trip requires a minimum of **8 paying guests** to proceed. If this minimum cannot be met, the Organizer must notify S2W in writing as early as possible.
-
-### 7.2 Cancellation by Organizer
-
-| Notice Given | Non-Refundable Amount |
-|---|---|
-| 90+ days before departure | 1st instalment (€8,000) |
-| 60–89 days before departure | 1st and 2nd instalments (€16,000) |
-| Fewer than 60 days before departure | All payments made to date |
-
-### 7.3 Cancellation by S2W
-If S2W is unable to provide the agreed vessel due to circumstances within S2W's reasonable control, S2W will refund all amounts paid by the Organizer within 30 days.
-
-### 7.4 Force Majeure
-Neither party is liable for cancellations due to circumstances beyond reasonable control (natural disaster, government travel restrictions, severe illness, etc.). In such cases, S2W will make reasonable efforts to offer rebooking or credit toward a future trip.
 
 ---
 
@@ -152,10 +161,12 @@ The Organizer acknowledges and agrees that:
 
 ---
 
-## 9. STANDARD TERMS
+## 9. GOVERNING LAW AND STANDARD TERMS
 
-All matters not specifically addressed in this Agreement are governed by the Sail to Wellness standard Terms and Conditions, available at:
+This Agreement is governed by Dutch law. All matters not specifically addressed in this Agreement are subject to the Sailing2Wellness Terms and Conditions, which form an integral part of this Agreement and are available at:
 **sailing2wellness.com/terms-booking-conditions/**
+
+In the event of any conflict between this Agreement and the standard Terms and Conditions, the specific terms of this Agreement prevail.
 
 ---
 
@@ -169,7 +180,7 @@ This Agreement, once signed by both parties, constitutes the entire agreement be
 
 ## 11. SIGNATURES
 
-**Sail to Wellness / Vincent Braakman**
+**Sailing2Wellness / Vincent Braakman**
 
 Signature: _______________________
 
