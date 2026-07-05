@@ -215,7 +215,7 @@
         activeCabin = cabin;
         document.getElementById('modal-cabin-title').textContent = `${cabin.label} - ${cabin.cabin_id}`;
         document.getElementById('modal-guests-select').value = cabin.type === 'single' ? '1' : '2';
-        document.getElementById('modal-guests-select').disabled = cabin.type === 'single';
+        document.getElementById('modal-guests-select').disabled = true;
         toggleGuest2Field();
 
         const inst = cabin.installments;
