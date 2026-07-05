@@ -126,8 +126,18 @@
 <script>
 (function () {
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwtHOt-THBb0jpIa-uT5xr7xUpW3ScYs1VYfxwGGsLLV1BjQNTYNT_zVMeb2VWlP6JV/exec';
-    const CABIN_PHOTOS = { double: 'images/cabin-1.jpg', single: 'images/cabin-3-small.jpg' };
     const BOAT_LABELS = { bali: 'Bali 5.2 - Boat 1', saba: 'Saba 50 - Boat 2' };
+    const DOUBLE_PHOTOS = {
+        bali: ['images/bali-cabin-1.jpg', 'images/bali-cabin-2.jpg', 'images/bali-cabin-3.jpg'],
+        saba: ['images/cabin-1.jpg', 'images/cabin-2.jpg']
+    };
+    const SINGLE_PHOTO = 'images/cabin-3-small.jpg';
+
+    function cabinPhoto(cabin, indexWithinBoat) {
+        if (cabin.type === 'single') return SINGLE_PHOTO;
+        const photos = DOUBLE_PHOTOS[cabin.boat] || DOUBLE_PHOTOS.bali;
+        return photos[indexWithinBoat % photos.length];
+    }
 
     let cabins = [];
 
@@ -177,12 +187,12 @@
             const grid = document.createElement('div');
             grid.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.5rem;';
 
-            boats[boat].forEach(cabin => {
+            boats[boat].forEach((cabin, i) => {
                 const sold = cabin.status !== 'available';
                 const card = document.createElement('div');
                 card.style.cssText = `background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08); ${sold ? 'opacity:0.5;' : 'cursor:pointer;'}`;
                 card.innerHTML = `
-                    <img src="${CABIN_PHOTOS[cabin.type]}" alt="${cabin.label}" style="width:100%; height:180px; object-fit:cover;">
+                    <img src="${cabinPhoto(cabin, i)}" alt="${cabin.label}" style="width:100%; height:180px; object-fit:cover;">
                     <div style="padding:1.25rem;">
                         <div style="font-weight:600; color:var(--blue); margin-bottom:0.25rem;">${cabin.label}</div>
                         <div style="font-size:0.85rem; color:#888; margin-bottom:0.75rem;">${cabin.cabin_id}</div>
