@@ -8,8 +8,8 @@ const SHEET_PAYMENTS = 'Payments';
 const SHEET_LOG = 'Log';
 
 const CABIN_TYPES = [
-  { boat: 'bali', type: 'double', label: 'Bali 5.2 - Double Cabin', priceTotal: 9975, guests: 2, ids: ['BALI-C1', 'BALI-C2', 'BALI-C3', 'BALI-C4', 'BALI-C5', 'BALI-C6'] },
-  { boat: 'saba', type: 'double', label: 'Saba 50 - Double Cabin', priceTotal: 9975, guests: 2, ids: ['SABA-C1', 'SABA-C2', 'SABA-C3', 'SABA-C4', 'SABA-C5'] },
+  { boat: 'bali', type: 'double', label: 'Bali 5.2 - Double Cabin', priceTotal: 9000, guests: 2, ids: ['BALI-C1', 'BALI-C2', 'BALI-C3', 'BALI-C4', 'BALI-C5', 'BALI-C6'] },
+  { boat: 'saba', type: 'double', label: 'Saba 50 - Double Cabin', priceTotal: 9000, guests: 2, ids: ['SABA-C1', 'SABA-C2', 'SABA-C3', 'SABA-C4', 'SABA-C5'] },
   { boat: 'saba', type: 'single', label: 'Saba 50 - Single Cabin (starboard-centre)', priceTotal: 5725, guests: 1, ids: ['SABA-C6'] }
 ];
 
@@ -29,7 +29,8 @@ const CONFIG_DEFAULTS = {
   inst4_due_date: '2027-06-26',
   trip_departure_date: '2027-09-18',
   last_poll_timestamp: '0',
-  waitlist_threshold_notified: 'FALSE'
+  waitlist_threshold_notified: 'FALSE',
+  terms_url: ''
 };
 
 /* ===== One-run setup functions ===== */
@@ -163,13 +164,14 @@ function doPost(e) {
 function getAvailability() {
   const rows = readSheet(SHEET_CABINS);
   const boat2Open = getConfig('boat2_open') === 'TRUE';
-  return rows
+  const cabins = rows
     .filter(r => r.boat === 'bali' || boat2Open || r.status !== 'hidden')
     .map(r => ({
       cabin_id: r.cabin_id, boat: r.boat, type: r.type, label: r.label,
       price_pp: r.price_pp, price_total: r.price_total, status: r.status,
       installments: computeInstallments(Number(r.price_total), r.type === 'single' ? 1 : 2)
     }));
+  return { cabins, terms_url: getConfig('terms_url') };
 }
 
 function getHealthcheck() {
@@ -208,7 +210,7 @@ function handleReserve(body) {
     updateCabinStatus(body.cabin_id, 'reserved', body.booking_id);
 
     const installments = computeInstallments(Number(cabin.price_total), cabin.type === 'single' ? 1 : 2);
-    const links = getLinksForCabin(cabin, 1);
+    const links = getLinksForCabin(cabin, 1, body.booking_id, body.email);
 
     sendGuestEmail(body.email, 'Your Lefkada 2027 reservation - next step',
       reservationEmailBody(body, cabin, installments, links));
@@ -235,7 +237,7 @@ function handleWaitlist(body) {
   if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return { ok: false, reason: 'invalid_email' };
   appendRow(SHEET_WAITLIST, [new Date().toISOString(), body.name || '', body.email, body.phone || '', body.guests || '', body.boat2_interest || 'TRUE']);
   sendGuestEmail(body.email, "You're on the Lefkada 2027 waitlist",
-    `Hi ${body.name || ''},<br><br>You're on the waitlist for Boat 2. We'll email you the moment it's confirmed.<br><br>Best,<br>Sailing2Wellness`);
+    `Hi ${body.name || ''},<br><br>You're on the waitlist for Boat 2. We'll email you the moment it's confirmed.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
   emailAdmin('New waitlist signup', `${body.name} (${body.email})`);
   logEvent('waitlist', body.email);
   return { ok: true };
@@ -254,7 +256,7 @@ function expireReservations() {
     setCellValue(SHEET_BOOKINGS, index, 'status', 'expired');
     updateCabinStatus(row.cabin_id, 'available', '');
     sendGuestEmail(row.email, 'Your Lefkada 2027 reservation has expired',
-      `Hi ${row.name},<br><br>Your reservation on ${row.cabin_id} expired after ${expiryHours} hours without a deposit. The cabin is available again - feel free to book another if you'd still like to join.<br><br>Best,<br>Sailing2Wellness`);
+      `Hi ${row.name},<br><br>Your reservation on ${row.cabin_id} expired after ${expiryHours} hours without a deposit. The cabin is available again - feel free to book another if you'd still like to join.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
     emailAdmin('Reservation expired', `${row.name} - ${row.cabin_id} (booking ${row.booking_id})`);
     logEvent('expire', row.booking_id);
   });
@@ -293,10 +295,10 @@ function recordPayment(sessionId, bookingId, amount, instNum) {
     setBookingField(bookingId, 'status', 'confirmed');
     updateCabinStatus(booking.cabin_id, 'sold', bookingId);
     sendGuestEmail(booking.email, "You're confirmed! Lefkada 2027",
-      `Hi ${booking.name},<br><br>Your deposit is in - you're confirmed on ${booking.cabin_id} for The Wellness Odyssey, Sep 18-24 2027. We'll email you ahead of each remaining installment.<br><br>Best,<br>Sailing2Wellness`);
+      `Hi ${booking.name},<br><br>Your deposit is in - you're confirmed on ${booking.cabin_id} for The Wellness Odyssey, Sep 18-24 2027. We'll email you ahead of each remaining installment.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
   } else {
     sendGuestEmail(booking.email, `Payment received - installment ${instNum}`,
-      `Hi ${booking.name},<br><br>Received your installment ${instNum} payment of EUR ${amount}. Thank you.<br><br>Best,<br>Sailing2Wellness`);
+      `Hi ${booking.name},<br><br>Received your installment ${instNum} payment of EUR ${amount} ${usdApprox(amount)}. Thank you.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
   }
   emailAdmin('Payment received', `${booking.name}, ${booking.cabin_id}, installment ${instNum}, EUR ${amount}`);
   logEvent('payment', `${bookingId} inst${instNum} EUR ${amount}`);
@@ -317,9 +319,10 @@ function sendInstallmentReminders() {
       if (reminderAlreadySentToday(booking.booking_id, n)) return;
 
       const cabin = findCabin(booking.cabin_id);
-      const links = getLinksForCabin(cabin, n);
+      const links = getLinksForCabin(cabin, n, booking.booking_id, booking.email);
+      const amount = computeInstallments(Number(cabin.price_total), cabin.type === 'single' ? 1 : 2)[n - 1];
       sendGuestEmail(booking.email, `Installment ${n} due - Lefkada 2027`,
-        `Hi ${booking.name},<br><br>Installment ${n} for ${cabin.label} is due ${dueDates[n]}.<br><br>Pay by card: ${links.card}<br>Pay by Amex: ${links.amex}<br><br>Booking reference: ${booking.booking_id}<br><br>Best,<br>Sailing2Wellness`);
+        `Hi ${booking.name},<br><br>Installment ${n} for ${cabin.label} (EUR ${amount} ${usdApprox(amount)}) is due ${dueDates[n]}.<br><br>Pay by card: ${links.card}<br>Pay by Amex: ${links.amex}<br><br>Booking reference: ${booking.booking_id}<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
       logEvent('reminder', `${booking.booking_id} inst${n}`);
     });
   });
@@ -370,20 +373,29 @@ function computeInstallments(priceTotal, guests) {
   return [inst1, inst2, inst3, inst4];
 }
 
-function getLinksForCabin(cabin, instNum) {
+function getLinksForCabin(cabin, instNum, bookingId, email) {
+  const rawCard = getConfig(`link_${cabin.boat}_${cabin.type}_inst${instNum}_card`);
+  const rawAmex = getConfig(`link_${cabin.boat}_${cabin.type}_inst${instNum}_amex`);
   return {
-    card: getConfig(`link_${cabin.boat}_${cabin.type}_inst${instNum}_card`),
-    amex: getConfig(`link_${cabin.boat}_${cabin.type}_inst${instNum}_amex`)
+    card: withBookingRef(rawCard, bookingId, email),
+    amex: withBookingRef(rawAmex, bookingId, email)
   };
+}
+
+function withBookingRef(url, bookingId, email) {
+  const sep = url.includes('?') ? '&' : '?';
+  return url + sep + 'client_reference_id=' + encodeURIComponent(bookingId) + '&prefilled_email=' + encodeURIComponent(email);
 }
 
 /* ===== Stripe REST helpers ===== */
 
 function stripeApiCall(key, path, formParams) {
+  const stringParams = {};
+  Object.keys(formParams).forEach(k => stringParams[k] = String(formParams[k]));
   const options = {
     method: 'post',
     headers: { Authorization: 'Basic ' + Utilities.base64Encode(key + ':') },
-    payload: formParams,
+    payload: stringParams,
     muteHttpExceptions: true
   };
   const resp = UrlFetchApp.fetch('https://api.stripe.com/v1/' + path, options);
@@ -504,6 +516,37 @@ function logEvent(event, detail) {
 
 /* ===== Email ===== */
 
+const EMAIL_SIGNATURE_HTML = `<table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; max-width: 400px;">
+  <tr>
+    <td style="padding-right: 14px; vertical-align: middle; border-right: 2px solid #dddddd;">
+      <img src="https://sailing2wellness.com/wp-content/uploads/2023/11/Logo-2023-font-282x300.png" alt="Sailing2Wellness" width="90" style="display: block; max-width: 90px; height: auto;">
+    </td>
+    <td style="padding-left: 14px; vertical-align: top;">
+      <div style="font-weight: bold; font-size: 15px; color: #1a3c5a; line-height: 1.3;">The Sailing2Wellness Team</div>
+      <div style="font-size: 12px; color: #444444; margin-top: 6px; line-height: 1.6;">
+        <b style="color: #1a3c5a;">E</b> <a href="mailto:info@sailing2wellness.com" style="color: #1a73e8; text-decoration: none;">info@sailing2wellness.com</a><br>
+        <b style="color: #1a3c5a;">W</b> <a href="https://sailing2wellness.com" style="color: #1a73e8; text-decoration: none;">sailing2wellness.com</a>
+      </div>
+      <div style="margin-top: 8px;">
+        <a href="https://admin.trustindex.io/widget/logClick?pub_widget_id=f1a279f46efc53111606adab86c" style="text-decoration: none; display: inline-block;">
+          <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="vertical-align: middle; padding-right: 6px;">
+                <span style="display: inline-block; width: 16px; height: 16px; background-color: #00b67a; border-radius: 50%; text-align: center; line-height: 16px; font-size: 10px; color: white; font-weight: bold;">&#10003;</span>
+              </td>
+              <td style="vertical-align: middle;">
+                <span style="font-size: 12px; font-weight: bold; color: #333333;">Trustindex</span>
+                <span style="font-size: 11px; color: #888888; margin-left: 3px;">56 reviews</span><br>
+                <span style="font-size: 16px; color: #fbbc04; letter-spacing: 1px; line-height: 1;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              </td>
+            </tr>
+          </table>
+        </a>
+      </div>
+    </td>
+  </tr>
+</table>`;
+
 function sendGuestEmail(to, subject, htmlBody) {
   MailApp.sendEmail({ to, subject, htmlBody });
 }
@@ -515,17 +558,27 @@ function emailAdmin(subject, body) {
 function reservationEmailBody(body, cabin, installments, links) {
   return `Hi ${body.name},<br><br>` +
     `Your reservation on ${cabin.label} (${cabin.cabin_id || body.cabin_id}) is held for ${getConfig('reservation_expiry_hours')} hours.<br><br>` +
-    `Installment 1 (due now): EUR ${installments[0]}<br>` +
-    `Installment 2: EUR ${installments[1]}<br>` +
-    `Installment 3: EUR ${installments[2]}<br>` +
-    `Installment 4 (final, 12 weeks before departure): EUR ${installments[3]}<br><br>` +
+    `Installment 1 (due now): EUR ${installments[0]} ${usdApprox(installments[0])}<br>` +
+    `Installment 2: EUR ${installments[1]} ${usdApprox(installments[1])}<br>` +
+    `Installment 3: EUR ${installments[2]} ${usdApprox(installments[2])}<br>` +
+    `Installment 4 (final, 12 weeks before departure): EUR ${installments[3]} ${usdApprox(installments[3])}<br><br>` +
     `Pay installment 1 by card: ${links.card}<br>` +
     `Pay installment 1 by Amex: ${links.amex}<br><br>` +
-    `Booking reference: ${body.booking_id}<br><br>Best,<br>Sailing2Wellness`;
+    `Booking reference: ${body.booking_id}<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`;
 }
 
 /* ===== JSON response ===== */
 
 function jsonOut(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function round2(n) {
+  return Math.round(n * 100) / 100;
+}
+
+const EUR_TO_USD = 1.14; // approximate, for guest reference only
+
+function usdApprox(n) {
+  return '(approx. $' + Math.round(Number(n) * EUR_TO_USD).toLocaleString('en-US') + ')';
 }
