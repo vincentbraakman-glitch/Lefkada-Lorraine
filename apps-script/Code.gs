@@ -655,3 +655,60 @@ const EUR_TO_USD = 1.14; // approximate, for guest reference only
 function usdApprox(n) {
   return '(approx. $' + Math.round(Number(n) * EUR_TO_USD).toLocaleString('en-US') + ')';
 }
+
+/* ===== Manual bank-payment confirmation (one-click Sheet menu) ===== */
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('Lefkada Bookings')
+    .addItem('Mark bank payment received', 'markBankPaymentReceivedUI')
+    .create();
+}
+
+function markBankPaymentReceivedUI() {
+  const ui = SpreadsheetApp.getUi();
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  if (sheet.getName() !== SHEET_BOOKINGS) {
+    ui.alert('Open the "Bookings" tab first, then click the row of the person who paid.');
+    return;
+  }
+  const row = sheet.getActiveCell().getRow();
+  if (row < 2) { ui.alert('Click the booking row first (not the header row).'); return; }
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const vals = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const rec = {};
+  headers.forEach((h, i) => rec[h] = vals[i]);
+  if (!rec.booking_id) { ui.alert('There is no booking on this row.'); return; }
+
+  const resp = ui.prompt('Confirm bank payment',
+    `Booking: ${rec.name} (${rec.cabin_id}).\nWhich installment did they just pay? Type 1, 2, 3 or 4:`,
+    ui.ButtonSet.OK_CANCEL);
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  const n = parseInt(String(resp.getResponseText()).trim(), 10);
+  if ([1, 2, 3, 4].indexOf(n) === -1) { ui.alert('Please type just the number 1, 2, 3 or 4.'); return; }
+
+  markBankPaymentReceived(rec.booking_id, n);
+  ui.alert(`Done. Installment ${n} is marked paid for ${rec.name}, and their confirmation email has been sent.`);
+}
+
+function markBankPaymentReceived(bookingId, instNum) {
+  const booking = findBooking(bookingId);
+  if (!booking) { logEvent('error', 'markBankPaymentReceived: unknown booking ' + bookingId); return; }
+  const cabin = findCabin(booking.cabin_id);
+  const amount = computeInstallments(Number(cabin.price_total), cabin.type === 'single' ? 1 : 2)[instNum - 1];
+
+  appendRow(SHEET_PAYMENTS, [new Date().toISOString(), 'bank-transfer', bookingId, amount, instNum]);
+  setBookingField(bookingId, `inst${instNum}_paid`, 'TRUE');
+
+  if (String(instNum) === '1') {
+    setBookingField(bookingId, 'status', 'confirmed');
+    updateCabinStatus(booking.cabin_id, 'sold', bookingId);
+    sendGuestEmail(booking.email, "You're confirmed! Lefkada 2027",
+      `Hi ${booking.name},<br><br>We've received your bank transfer - you're confirmed on ${booking.cabin_id} for The Wellness Odyssey, Sep 18-24 2027. We'll email you ahead of each remaining installment.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
+  } else {
+    sendGuestEmail(booking.email, `Payment received - installment ${instNum}`,
+      `Hi ${booking.name},<br><br>We've received your bank transfer for installment ${instNum} (EUR ${amount} ${usdApprox(amount)}). Thank you.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
+  }
+  emailAdmin('Bank payment confirmed', `${booking.name}, ${booking.cabin_id}, installment ${instNum}, EUR ${amount}`);
+  logEvent('bank_payment', `${bookingId} inst${instNum} EUR ${amount}`);
+}
