@@ -7,14 +7,16 @@ const SHEET_CONFIG = 'Config';
 const SHEET_PAYMENTS = 'Payments';
 const SHEET_LOG = 'Log';
 
+// Boat 1 = Bali 5.2 (6 cabins, bookable now). Boat 2 = Lagoon 46 (4 cabins, waitlist
+// until Config!boat2_open = TRUE). Any non-'bali' boat is treated as the second boat.
 const CABIN_TYPES = [
   { boat: 'bali', type: 'double', label: 'Bali 5.2 - Double Cabin', priceTotal: 9000, guests: 2, ids: ['BALI-C1', 'BALI-C2', 'BALI-C3', 'BALI-C4', 'BALI-C5', 'BALI-C6'] },
-  { boat: 'saba', type: 'double', label: 'Saba 50 - Double Cabin', priceTotal: 9000, guests: 2, ids: ['SABA-C1', 'SABA-C2', 'SABA-C3', 'SABA-C4', 'SABA-C5'] },
-  { boat: 'saba', type: 'single', label: 'Saba 50 - Single Cabin (starboard-centre)', priceTotal: 5725, guests: 1, ids: ['SABA-C6'] }
+  { boat: 'lagoon', type: 'double', label: 'Lagoon 46 - Double Cabin', priceTotal: 9000, guests: 2, ids: ['LAGOON-C1', 'LAGOON-C2', 'LAGOON-C3', 'LAGOON-C4'] }
 ];
 
 const CONFIG_DEFAULTS = {
   admin_email: 'info@sailing2wellness.com',
+  partner_email: 'yogawithlorraine13@gmail.com',
   boat2_open: 'FALSE',
   boat2_threshold: '6',
   reservation_expiry_hours: '48',
@@ -29,7 +31,7 @@ const CONFIG_DEFAULTS = {
   trip_departure_date: '2027-09-18',
   last_poll_timestamp: '0',
   waitlist_threshold_notified: 'FALSE',
-  terms_url: '',
+  terms_url: 'https://sailing2wellness.com/terms/',
   bank_name: 'Sailing2Wellness',
   bank_routing: '084009519',
   bank_account_number: '252003195652603',
@@ -212,7 +214,7 @@ function handleReserve(body) {
 
     const cabin = findCabin(body.cabin_id);
     if (!cabin) return { ok: false, reason: 'cabin_not_found' };
-    if (cabin.boat === 'saba' && getConfig('boat2_open') !== 'TRUE') return { ok: false, reason: 'boat_not_open' };
+    if (cabin.boat !== 'bali' && getConfig('boat2_open') !== 'TRUE') return { ok: false, reason: 'boat_not_open' };
     if (cabin.status !== 'available') return { ok: false, reason: 'cabin_taken' };
 
     const method = body.payment_method === 'bank' ? 'bank' : 'card';
@@ -263,7 +265,7 @@ function handleWaitlist(body) {
   appendRow(SHEET_WAITLIST, [new Date().toISOString(), body.name || '', body.email, body.phone || '', body.guests || '', body.boat2_interest || 'TRUE']);
   sendGuestEmail(body.email, "You're on the Lefkada 2027 waitlist",
     `Hi ${body.name || ''},<br><br>You're on the waitlist for Boat 2. We'll email you the moment it's confirmed.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
-  emailAdmin('New waitlist signup', `${body.name} (${body.email})`);
+  emailPartner('New Lagoon 46 (Boat 2) waitlist signup', `${body.name} (${body.email}) joined the Lagoon 46 waitlist.`);
   logEvent('waitlist', body.email);
   return { ok: true };
 }
@@ -397,7 +399,9 @@ function checkWaitlistThreshold() {
   if (getConfig('waitlist_threshold_notified') === 'TRUE') return;
   const count = readSheet(SHEET_WAITLIST).length;
   if (count < Number(getConfig('boat2_threshold'))) return;
-  emailAdmin('Boat 2 threshold reached', `${count} people on the waitlist. Flip Config!boat2_open to TRUE when ready.`);
+  const msg = `${count} people are on the Lagoon 46 waitlist - enough interest to add the second boat.`;
+  emailPartner('Your Lagoon 46 waitlist is ready', msg + ' We will get the second boat opened for booking.');
+  emailAdmin('Boat 2 threshold reached', msg + ' Confirm a Lagoon 46 and set Config!boat2_open = TRUE to open booking.');
   setConfig('waitlist_threshold_notified', 'TRUE');
   logEvent('waitlist_threshold', String(count));
 }
@@ -601,6 +605,12 @@ function sendGuestEmail(to, subject, htmlBody) {
 
 function emailAdmin(subject, body) {
   MailApp.sendEmail({ to: getConfig('admin_email') || CONFIG_DEFAULTS.admin_email, subject, htmlBody: body });
+}
+
+function emailPartner(subject, body) {
+  const to = getConfig('partner_email');
+  if (!to) return;
+  MailApp.sendEmail({ to, subject, htmlBody: body + '<br><br>Best,<br>' + EMAIL_SIGNATURE_HTML });
 }
 
 function reservationEmailBody(body, cabin, installments, links) {
