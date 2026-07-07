@@ -662,7 +662,7 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Lefkada Bookings')
     .addItem('Mark bank payment received', 'markBankPaymentReceivedUI')
-    .create();
+    .addToUi();
 }
 
 function markBankPaymentReceivedUI() {
