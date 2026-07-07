@@ -18,8 +18,7 @@ const CONFIG_DEFAULTS = {
   boat2_open: 'FALSE',
   boat2_threshold: '6',
   reservation_expiry_hours: '48',
-  booking_fee_pct: '5',
-  amex_surcharge_pct: '',
+  card_surcharge_pct: '3.5',
   inst1_flat_per_guest: '1000',
   inst2_pct_of_remainder: '25',
   inst3_pct_of_remainder: '25',
@@ -30,7 +29,13 @@ const CONFIG_DEFAULTS = {
   trip_departure_date: '2027-09-18',
   last_poll_timestamp: '0',
   waitlist_threshold_notified: 'FALSE',
-  terms_url: ''
+  terms_url: '',
+  bank_name: 'Sailing2Wellness',
+  bank_routing: '084009519',
+  bank_account_number: '252003195652603',
+  bank_swift: 'TRWIUS35XXX',
+  bank_address: 'Wise US Inc, 108 W 13th St, Wilmington, DE, 19801, United States',
+  bank_currency: 'USD'
 };
 
 /* ===== One-run setup functions ===== */
@@ -82,33 +87,29 @@ function createStripeLinks() {
   const setupKey = props.getProperty('STRIPE_SETUP_KEY');
   if (!setupKey) throw new Error('Set STRIPE_SETUP_KEY in Script Properties (Project Settings) before running this.');
 
-  const amexPct = getConfig('amex_surcharge_pct');
-  if (amexPct === '' || amexPct === null || amexPct === undefined) {
-    throw new Error('Set Config!amex_surcharge_pct (a number, e.g. 3) before running createStripeLinks().');
+  const cardPct = getConfig('card_surcharge_pct');
+  if (cardPct === '' || cardPct === null || cardPct === undefined) {
+    throw new Error('Set Config!card_surcharge_pct (a number, e.g. 3.5) before running createStripeLinks(). Run setupSheet() first if the key is missing.');
   }
 
   CABIN_TYPES.forEach(ct => {
     const installments = computeInstallments(ct.priceTotal, ct.guests);
     installments.forEach((amount, idx) => {
       const instNum = idx + 1;
-      ['card', 'amex'].forEach(method => {
-        const finalAmount = method === 'amex'
-          ? round2(amount * (1 + Number(amexPct) / 100))
-          : amount;
-        const url = createOnePaymentLink(setupKey, ct, instNum, method, finalAmount);
-        setConfig(`link_${ct.boat}_${ct.type}_inst${instNum}_${method}`, url);
-      });
+      const finalAmount = round2(amount * (1 + Number(cardPct) / 100));
+      const url = createOnePaymentLink(setupKey, ct, instNum, finalAmount);
+      setConfig(`link_${ct.boat}_${ct.type}_inst${instNum}_card`, url);
     });
   });
 
   logEvent('setup', 'createStripeLinks completed');
 }
 
-function createOnePaymentLink(key, ct, instNum, method, amount) {
+function createOnePaymentLink(key, ct, instNum, amount) {
   const priceRes = stripeApiCall(key, 'prices', {
     unit_amount: Math.round(amount * 100),
     currency: 'eur',
-    'product_data[name]': `${ct.label} - Installment ${instNum} of 4 (${method === 'amex' ? 'Amex' : 'Card'})`
+    'product_data[name]': `${ct.label} - Installment ${instNum} of 4 (Card)`
   });
   const linkRes = stripeApiCall(key, 'payment_links', {
     'line_items[0][price]': priceRes.id,
@@ -116,7 +117,7 @@ function createOnePaymentLink(key, ct, instNum, method, amount) {
     'metadata[boat]': ct.boat,
     'metadata[cabin_type]': ct.type,
     'metadata[installment]': String(instNum),
-    'metadata[payment_method]': method
+    'metadata[payment_method]': 'card'
   });
   return linkRes.url;
 }
@@ -171,7 +172,19 @@ function getAvailability() {
       price_pp: r.price_pp, price_total: r.price_total, status: r.status,
       installments: computeInstallments(Number(r.price_total), r.type === 'single' ? 1 : 2)
     }));
-  return { cabins, terms_url: getConfig('terms_url') };
+  return {
+    cabins,
+    terms_url: getConfig('terms_url'),
+    card_surcharge_pct: Number(getConfig('card_surcharge_pct') || 0),
+    bank: {
+      name: getConfig('bank_name'),
+      routing: getConfig('bank_routing'),
+      account_number: getConfig('bank_account_number'),
+      swift: getConfig('bank_swift'),
+      address: getConfig('bank_address'),
+      currency: getConfig('bank_currency')
+    }
+  };
 }
 
 function getHealthcheck() {
@@ -202,22 +215,34 @@ function handleReserve(body) {
     if (cabin.boat === 'saba' && getConfig('boat2_open') !== 'TRUE') return { ok: false, reason: 'boat_not_open' };
     if (cabin.status !== 'available') return { ok: false, reason: 'cabin_taken' };
 
+    const method = body.payment_method === 'bank' ? 'bank' : 'card';
+    const status = method === 'bank' ? 'pending_bank' : 'pending';
+
     appendRow(SHEET_BOOKINGS, [
       body.booking_id, new Date().toISOString(), body.cabin_id, body.name, body.email,
-      body.phone || '', body.guests, body.guest2_name || '', 'pending',
-      'FALSE', 'FALSE', 'FALSE', 'FALSE', ''
+      body.phone || '', body.guests, body.guest2_name || '', status,
+      'FALSE', 'FALSE', 'FALSE', 'FALSE', method
     ]);
     updateCabinStatus(body.cabin_id, 'reserved', body.booking_id);
 
-    const installments = computeInstallments(Number(cabin.price_total), cabin.type === 'single' ? 1 : 2);
-    const links = getLinksForCabin(cabin, 1, body.booking_id, body.email);
+    const guests = cabin.type === 'single' ? 1 : 2;
+    const installments = computeInstallments(Number(cabin.price_total), guests);
 
-    sendGuestEmail(body.email, 'Your Lefkada 2027 reservation - next step',
-      reservationEmailBody(body, cabin, installments, links));
-    emailAdmin('New reservation: ' + body.name, `Cabin ${body.cabin_id} (${cabin.label}), ${body.guests} guest(s). Booking ID ${body.booking_id}.`);
-    logEvent('reserve', `${body.booking_id} -> ${body.cabin_id}`);
+    if (method === 'bank') {
+      sendGuestEmail(body.email, 'Your Lefkada 2027 reservation - bank transfer details',
+        bankReservationEmailBody(body, cabin, installments));
+      emailAdmin('New reservation (BANK TRANSFER): ' + body.name,
+        `Cabin ${body.cabin_id} (${cabin.label}), ${body.guests} guest(s). Booking ID ${body.booking_id}. Watch your Wise USD account for the deposit, then mark inst1_paid=TRUE and status=confirmed in the Bookings tab.`);
+    } else {
+      const links = getLinksForCabin(cabin, 1, body.booking_id, body.email);
+      sendGuestEmail(body.email, 'Your Lefkada 2027 reservation - next step',
+        reservationEmailBody(body, cabin, installments, links));
+      emailAdmin('New reservation: ' + body.name,
+        `Cabin ${body.cabin_id} (${cabin.label}), ${body.guests} guest(s). Booking ID ${body.booking_id}.`);
+    }
+    logEvent('reserve', `${body.booking_id} -> ${body.cabin_id} (${method})`);
 
-    return { ok: true, booking_id: body.booking_id, installments, links };
+    return { ok: true, booking_id: body.booking_id, method, installments };
   } finally {
     lock.releaseLock();
   }
@@ -246,6 +271,8 @@ function handleWaitlist(body) {
 /* ===== Triggers ===== */
 
 function expireReservations() {
+  // Only auto-expires CARD reservations ('pending'). Bank-transfer holds ('pending_bank')
+  // never auto-expire, since wires take days - Vincent confirms or cancels those by hand.
   const expiryHours = Number(getConfig('reservation_expiry_hours'));
   const rows = readSheetWithRowIndex(SHEET_BOOKINGS);
   const now = new Date();
@@ -308,8 +335,10 @@ function sendInstallmentReminders() {
   const rows = readSheet(SHEET_BOOKINGS);
   const today = new Date();
   const dueDates = { 2: getConfig('inst2_due_date'), 3: getConfig('inst3_due_date'), 4: getConfig('inst4_due_date') };
+  const cardPct = Number(getConfig('card_surcharge_pct') || 0);
 
   rows.filter(r => r.status === 'confirmed').forEach(booking => {
+    const method = booking.notes === 'bank' ? 'bank' : 'card';
     [2, 3, 4].forEach(n => {
       if (booking[`inst${n}_paid`] === 'TRUE') return;
       const due = new Date(dueDates[n]);
@@ -319,10 +348,22 @@ function sendInstallmentReminders() {
       if (reminderAlreadySentToday(booking.booking_id, n)) return;
 
       const cabin = findCabin(booking.cabin_id);
-      const links = getLinksForCabin(cabin, n, booking.booking_id, booking.email);
-      const amount = computeInstallments(Number(cabin.price_total), cabin.type === 'single' ? 1 : 2)[n - 1];
+      const baseAmt = computeInstallments(Number(cabin.price_total), cabin.type === 'single' ? 1 : 2)[n - 1];
+
+      let payBlock;
+      if (method === 'bank') {
+        payBlock = `Installment ${n} for ${cabin.label} (EUR ${baseAmt} ${usdApprox(baseAmt)}) is due ${dueDates[n]}.<br><br>` +
+          bankDetailsHtml() +
+          `Reference: ${booking.booking_id}`;
+      } else {
+        const cardAmt = round2(baseAmt * (1 + cardPct / 100));
+        const links = getLinksForCabin(cabin, n, booking.booking_id, booking.email);
+        payBlock = `Installment ${n} for ${cabin.label} (EUR ${cardAmt} ${usdApprox(cardAmt)}, incl. ${cardPct}% card fee) is due ${dueDates[n]}.<br><br>` +
+          `Pay by card: ${links.card}<br>Reference: ${booking.booking_id}`;
+      }
+
       sendGuestEmail(booking.email, `Installment ${n} due - Lefkada 2027`,
-        `Hi ${booking.name},<br><br>Installment ${n} for ${cabin.label} (EUR ${amount} ${usdApprox(amount)}) is due ${dueDates[n]}.<br><br>Pay by card: ${links.card}<br>Pay by Amex: ${links.amex}<br><br>Booking reference: ${booking.booking_id}<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
+        `Hi ${booking.name},<br><br>${payBlock}<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`);
       logEvent('reminder', `${booking.booking_id} inst${n}`);
     });
   });
@@ -335,13 +376,14 @@ function weeklyOutstandingReport() {
   const lines = [];
 
   rows.forEach(booking => {
+    const method = booking.notes === 'bank' ? 'bank' : 'card';
     [2, 3, 4].forEach(n => {
       if (booking[`inst${n}_paid`] === 'TRUE') return;
       const due = new Date(dueDates[n]);
       const daysOverdue = Math.floor((today - due) / 86400000);
       const cabin = findCabin(booking.cabin_id);
       const amount = computeInstallments(Number(cabin.price_total), cabin.type === 'single' ? 1 : 2)[n - 1];
-      lines.push(`${booking.name} | ${booking.cabin_id} | Installment ${n} | EUR ${amount} | ${daysOverdue > 0 ? daysOverdue + ' days overdue' : 'not yet due'}`);
+      lines.push(`${booking.name} | ${booking.cabin_id} | ${method} | Installment ${n} | EUR ${amount} | ${daysOverdue > 0 ? daysOverdue + ' days overdue' : 'not yet due'}`);
     });
   });
 
@@ -375,11 +417,7 @@ function computeInstallments(priceTotal, guests) {
 
 function getLinksForCabin(cabin, instNum, bookingId, email) {
   const rawCard = getConfig(`link_${cabin.boat}_${cabin.type}_inst${instNum}_card`);
-  const rawAmex = getConfig(`link_${cabin.boat}_${cabin.type}_inst${instNum}_amex`);
-  return {
-    card: withBookingRef(rawCard, bookingId, email),
-    amex: withBookingRef(rawAmex, bookingId, email)
-  };
+  return { card: withBookingRef(rawCard, bookingId, email) };
 }
 
 function withBookingRef(url, bookingId, email) {
@@ -547,6 +585,16 @@ const EMAIL_SIGNATURE_HTML = `<table cellpadding="0" cellspacing="0" border="0" 
   </tr>
 </table>`;
 
+function bankDetailsHtml() {
+  return `<b>Bank transfer details (${getConfig('bank_currency')}, via Wise):</b><br>` +
+    `Account name: ${getConfig('bank_name')}<br>` +
+    `Routing number (US ACH/wire): ${getConfig('bank_routing')}<br>` +
+    `Account number: ${getConfig('bank_account_number')}<br>` +
+    `SWIFT/BIC (from outside the US): ${getConfig('bank_swift')}<br>` +
+    `Bank address: ${getConfig('bank_address')}<br><br>` +
+    `Sending from a US bank? Use the routing + account number for a cheap domestic transfer. Please send the USD equivalent of the amount due, and add your booking reference in the note.<br><br>`;
+}
+
 function sendGuestEmail(to, subject, htmlBody) {
   MailApp.sendEmail({ to, subject, htmlBody });
 }
@@ -556,15 +604,30 @@ function emailAdmin(subject, body) {
 }
 
 function reservationEmailBody(body, cabin, installments, links) {
+  const cardPct = Number(getConfig('card_surcharge_pct') || 0);
+  const c = installments.map(a => round2(a * (1 + cardPct / 100)));
   return `Hi ${body.name},<br><br>` +
     `Your reservation on ${cabin.label} (${cabin.cabin_id || body.cabin_id}) is held for ${getConfig('reservation_expiry_hours')} hours.<br><br>` +
-    `Installment 1 (due now): EUR ${installments[0]} ${usdApprox(installments[0])}<br>` +
+    `Your installments (card, incl. ${cardPct}% card processing fee):<br>` +
+    `Installment 1 (due now): EUR ${c[0]} ${usdApprox(c[0])}<br>` +
+    `Installment 2: EUR ${c[1]} ${usdApprox(c[1])}<br>` +
+    `Installment 3: EUR ${c[2]} ${usdApprox(c[2])}<br>` +
+    `Installment 4 (final, 12 weeks before departure): EUR ${c[3]} ${usdApprox(c[3])}<br><br>` +
+    `Pay installment 1 by card: ${links.card}<br><br>` +
+    `Prefer to pay by bank transfer at the flat price (no card fee)? Just reply and we'll send you the details.<br><br>` +
+    `Booking reference: ${body.booking_id}<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`;
+}
+
+function bankReservationEmailBody(body, cabin, installments) {
+  return `Hi ${body.name},<br><br>` +
+    `Your reservation on ${cabin.label} (${cabin.cabin_id || body.cabin_id}) is held. To confirm it, please send your first installment by bank transfer - flat price, no card fee.<br><br>` +
+    `<b>Installment 1 (due now): EUR ${installments[0]} ${usdApprox(installments[0])}</b><br>` +
     `Installment 2: EUR ${installments[1]} ${usdApprox(installments[1])}<br>` +
     `Installment 3: EUR ${installments[2]} ${usdApprox(installments[2])}<br>` +
     `Installment 4 (final, 12 weeks before departure): EUR ${installments[3]} ${usdApprox(installments[3])}<br><br>` +
-    `Pay installment 1 by card: ${links.card}<br>` +
-    `Pay installment 1 by Amex: ${links.amex}<br><br>` +
-    `Booking reference: ${body.booking_id}<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`;
+    bankDetailsHtml() +
+    `<b>Booking reference: ${body.booking_id}</b> (please include this in your transfer note)<br><br>` +
+    `Once your transfer lands we'll confirm your cabin by email.<br><br>Best,<br>${EMAIL_SIGNATURE_HTML}`;
 }
 
 /* ===== JSON response ===== */
