@@ -11,7 +11,7 @@ const SHEET_LOG = 'Log';
 // until Config!boat2_open = TRUE). Any non-'bali' boat is treated as the second boat.
 const CABIN_TYPES = [
   { boat: 'bali', type: 'double', label: 'Bali 5.2 - Double Cabin', priceTotal: 9000, guests: 2, ids: ['BALI-C1', 'BALI-C2', 'BALI-C3', 'BALI-C4', 'BALI-C5', 'BALI-C6'] },
-  { boat: 'lagoon', type: 'double', label: 'Lagoon 46 - Double Cabin', priceTotal: 9000, guests: 2, ids: ['LAGOON-C1', 'LAGOON-C2', 'LAGOON-C3', 'LAGOON-C4'] }
+  { boat: 'lagoon', type: 'double', label: 'Lagoon 46 - Double Cabin', priceTotal: 8400, guests: 2, ids: ['LAGOON-C1', 'LAGOON-C2', 'LAGOON-C3', 'LAGOON-C4'] }
 ];
 
 const CONFIG_DEFAULTS = {
