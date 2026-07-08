@@ -166,7 +166,7 @@ function doPost(e) {
 
 function getAvailability() {
   const rows = readSheet(SHEET_CABINS);
-  const boat2Open = getConfig('boat2_open') === 'TRUE';
+  const boat2Open = isConfigTrue('boat2_open');
   const cabins = rows
     .filter(r => r.boat === 'bali' || boat2Open || r.status !== 'hidden')
     .map(r => ({
@@ -214,7 +214,7 @@ function handleReserve(body) {
 
     const cabin = findCabin(body.cabin_id);
     if (!cabin) return { ok: false, reason: 'cabin_not_found' };
-    if (cabin.boat !== 'bali' && getConfig('boat2_open') !== 'TRUE') return { ok: false, reason: 'boat_not_open' };
+    if (cabin.boat !== 'bali' && !isConfigTrue('boat2_open')) return { ok: false, reason: 'boat_not_open' };
     if (cabin.status !== 'available') return { ok: false, reason: 'cabin_taken' };
 
     const method = body.payment_method === 'bank' ? 'bank' : 'card';
@@ -395,7 +395,7 @@ function weeklyOutstandingReport() {
 }
 
 function checkWaitlistThreshold() {
-  if (getConfig('boat2_open') === 'TRUE') return;
+  if (isConfigTrue('boat2_open')) return;
   if (getConfig('waitlist_threshold_notified') === 'TRUE') return;
   const count = readSheet(SHEET_WAITLIST).length;
   if (count < Number(getConfig('boat2_threshold'))) return;
@@ -540,6 +540,14 @@ function reminderAlreadySentToday(bookingId, instNum) {
 function getConfig(key) {
   const row = readSheet(SHEET_CONFIG).find(r => r.key === key);
   return row ? row.value : '';
+}
+
+// Robust truthy check for Config flags. Google Sheets silently converts a typed
+// TRUE/FALSE into a boolean, so getValues() returns a JS boolean, not the string
+// 'TRUE'. Compare on the normalized string so 'TRUE', 'true', boolean true, and
+// stray whitespace all read the same.
+function isConfigTrue(key) {
+  return String(getConfig(key)).trim().toUpperCase() === 'TRUE';
 }
 
 function setConfig(key, value) {
